@@ -13,17 +13,23 @@ def getHorses():
   templist2 = []
   horseMetadata = getHorseMetadata()
   i = 0
+  size = len(horseMetadata)
+  lastProgress = 0
   for h in horseMetadata:
     i = i+1
-    print("{:.0%}".format(i / len(horseMetadata)))
+    progress = int(i / size * 100)
+    if lastProgress != progress:
+      lastProgress = progress
+      print(f"{progress}%")
+
     href = h[2]
     horseID = h[0]
     horseName = h[1]
-    country_age, owner, import_type, color_sex, dame, dame_sire = getHorseDetails(driver, href)
-    templist2.append([horseID, horseName, country_age, owner, import_type, color_sex, dame, dame_sire, href])
+    country_age, owner, import_type, color_sex, sire, dam, dam_sire = getHorseDetails(driver, href)
+    templist2.append([horseID, horseName, country_age, owner, import_type, color_sex, sire, dam, dam_sire, href])
   
   driver.close()
-  df = pd.DataFrame(templist2, columns=["horseID", "name", "country_age", "owner", "import_type", "color_sex", "dame", "dame_sire", "url"])
+  df = pd.DataFrame(templist2, columns=["horseID", "name", "country_age", "owner", "import_type", "color_sex", 'sire', "dam", "dam_sire", "url"])
   return df
 
 
@@ -71,10 +77,11 @@ def getHorseDetails(driver, url):
   owner = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[2]/td[3]").text
   import_type = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[2]/table/tbody/tr[3]/td[3]").text
   color_sex = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[2]/table/tbody/tr[2]/td[3]").text
-  dame = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[6]/td[3]").text
-  dame_sire = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[7]/td[3]").text
+  sire = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[5]/td[3]").text
+  dam = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[6]/td[3]").text
+  dam_sire = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[7]/td[3]").text
 
-  return country_age, owner, import_type, color_sex, dame, dame_sire
+  return country_age, owner, import_type, color_sex, sire, dam, dam_sire
 
 
 
@@ -119,5 +126,9 @@ def getHorseHistory(driver, url, horseID, horse_history=[]):
       horse_history.append(row_data)
       
 # get horse list
-metadata = getHorsesHistory()
-metadata.to_csv("horses_history.csv", header=False, index=False)
+# metadata = getHorsesHistory()
+# metadata.to_csv("horses_history.csv", header=False, index=False)
+
+
+horse = getHorses()
+horse.to_csv("horses.csv", index=False)
