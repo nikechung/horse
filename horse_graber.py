@@ -126,9 +126,9 @@ def getHorseHistory(driver, url, horseID, horse_history=[]):
       horse_history.append(row_data)
       
 # get horse list
-# metadata = getHorsesHistory()
-# metadata.to_csv("horses_history.csv", header=False, index=False)
+metadata = getHorsesHistory()
+metadata.to_csv("horses_history.csv", header=False, index=False)
 
 
-horse = getHorses()
-horse.to_csv("horses.csv", index=False)
+# horse = getHorses()
+# horse.to_csv("horses.csv", index=False)
