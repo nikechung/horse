@@ -101,7 +101,11 @@ def getHorsesHistory():
     getHorseHistory(driver, href, horseID, horse_history)
   
   driver.close()
-  df = pd.DataFrame(horse_history)
+  headers = ['horse_id','race_id','result','date','location_run','distance','G','race_class','dr','rtg','trainer','jockey','lbw', 'win_odds','act_wt','running_position','finish_time','weight','gear', 'tmp1', 'tmp2']
+  df = pd.DataFrame(horse_history, columns=headers)
+  df = df.drop(columns=['tmp1', 'tmp2'])
+  # Remove the header column in the middle
+  df = df[~(df["date"] == "Date")]
   return df
 
 def getHorseHistory(driver, url, horseID, horse_history=[]):
@@ -127,7 +131,7 @@ def getHorseHistory(driver, url, horseID, horse_history=[]):
       
 # get horse list
 metadata = getHorsesHistory()
-metadata.to_csv("horses_history.csv", header=False, index=False)
+metadata.to_csv("horses_history.csv", index=False)
 
 
 # horse = getHorses()
