@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def getHorses():
   options = webdriver.ChromeOptions()
   options.add_argument('--headless=new')
+
   driver = webdriver.Chrome(options=options)
   templist2 = []
   horseMetadata = getHorseMetadata()
@@ -109,6 +110,7 @@ def getHorsesHistory():
   return df
 
 def getHorseHistory(driver, url, horseID, horse_history=[]):
+  print(f'\tgrabbing data from {url}')
   driver.get(url)
 
   # wait until the page is loaded
@@ -119,20 +121,24 @@ def getHorseHistory(driver, url, horseID, horse_history=[]):
     print("Loading took too much time!", url)
 
   # get list element
+  driver.get_screenshot_as_file(f'screenshot/{horseID}.png')
   table = driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[3]/div[2]/div[2]/div[2]/div[1]/table[3]")
   trs = table.find_elements(by=By.TAG_NAME, value="tr")
+  print(f'\t\t{len(trs)} row found')
   for tr in trs:
     tds = tr.find_elements(by=By.TAG_NAME, value="td")
     if len(tds) > 15: 
       row_data = [horseID]
       for td in tds:
         row_data.append(td.text)
+
+      print(f'\tRace {row_data[1]}')
       horse_history.append(row_data)
       
 # get horse list
-metadata = getHorsesHistory()
-metadata.to_csv("horses_history.csv", index=False)
+# metadata = getHorsesHistory()
+# metadata.to_csv("horses_history.csv", index=False)
 
 
-# horse = getHorses()
-# horse.to_csv("horses.csv", index=False)
+horse = getHorses()
+horse.to_csv("horses.csv", index=False)
