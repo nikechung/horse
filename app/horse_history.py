@@ -40,11 +40,10 @@ def getHorseHistory(filename, horse_data):
     horse_history_data = horse_history_data.drop(horse_history_data[horse_history_data["finish_time"]=="--"].index)
     horse_history_data = horse_history_data.drop(horse_history_data[horse_history_data["weight"]=="--"].index)
     
-
     horse_history_data["month"] = horse_history_data["date"].dt.month
 
     #process location_run
-    horse_history_data["course_location"] = horse_history_data["location_run"].apply(lambda x: x.split('/')[0].strip())
+    horse_history_data["location"] = horse_history_data["location_run"].apply(lambda x: x.split('/')[0].strip())
     horse_history_data["track"] = horse_history_data["location_run"].apply(lambda x: x.split('/')[1].strip()) 
     horse_history_data["course"] = horse_history_data["location_run"].apply(extractCourse)
     
@@ -86,19 +85,35 @@ def __getLabelEncoder(field):
     return __labelEncoders[field]
     
 
-def encodeCourseLocation(course_location, fit=True):
-    global horse_history_data
-    le = __getLabelEncoder("course_location")
-    if fit:
-        le.fit(horse_history_data["course_location"])
-
-    return le.transform(course_location)
-    
 def encodeWithLabelEncoder(data, field, fit=True):
     le = __getLabelEncoder(field)
     if fit:
         le.fit(data)
     return le.transform(data) 
+
+def applyNoOfTurns(data):
+    data["no_of_turns"] = 0
+    data.loc[data["location"] == 'HV', 'no_of_turns'] = data.loc[data["location"] == 'HV']['distance'].map({
+        1000: 1,
+        1200: 2,
+        1650: 3,
+        1800: 3,
+        2200: 4,
+        2400: 4
+    })
+
+    data.loc[data["location"] == 'ST', 'no_of_turns'] =data.loc[data["location"] == 'ST']['distance'].map({
+        1000: 0,
+        1200: 1,
+        1400: 1,
+        1600: 1,
+        1650: 1,
+        1800: 1,
+        2000: 2,
+        2200: 2,
+        2400: 2
+    })
+
 
 def getMedianRank(field):
     return horse_history_data.groupby(field)["speed_m_s"].median().rank()
@@ -114,7 +129,7 @@ def prepareData(race_data):
     data = race_data.copy()
 
     # Remove foreign races
-    data = data[(data["course_location"] == "ST") | (data["course_location"] == "HV")]
+    data = data[(data["location"] == "ST") | (data["location"] == "HV")]
 
     data["G"] = data["G"].map(g_mapping)
     data["course"] = data["course"].map(course_mapping)
@@ -129,22 +144,8 @@ def prepareData(race_data):
 
     data["gear"] = data["gear"].map(lambda x: 0 if x == "--" else 1)
     data["track"] = encodeWithLabelEncoder(data["track"], 'track') 
+
+    applyNoOfTurns(data)
     
     return data
     
-
-
-# def preProcess_bak(horse_history_data, horse_data):
-#     horse_race_data = horse_history_data.copy()
-
-#     # Drop features
-#     col_to_drop = ["date", "result", "location_run", "running_position", "finish_time"]
-#     horse_race_data = horse_race_data.drop(col_to_drop, axis=1)
-
-#     from scipy import stats
-
-#     # Calculate the Z-scores
-#     z_scores = np.abs(stats.zscore(horse_race_data["speed_m_s"]))
-#     outlier_mask = (z_scores > 3)
-#     horse_race_data = horse_race_data[~outlier_mask]
-#     return horse_race_data
