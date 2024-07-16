@@ -27,6 +27,6 @@ features = ['horse_color', 'horse_age', 'race_class', 'weight', 'G', 'dr', 'jock
 
 X = d[features] 
 model, score = algorithm_analysis.findBestAlgorithm(X, y)
-
+algorithm_analysis.findBestHyperParameter(model, X, y)
 
 
