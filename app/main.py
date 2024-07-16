@@ -23,7 +23,7 @@ features =[ "horse_sex", "horse_color", "horse_age", 'race_class', "horse_import
 X = d[features]
 
 # features, score = feature_analysis.findBestFeatureCombinations(X, y)
-features = ['horse_color', 'horse_age', 'race_class', 'weight', 'G', 'dr', 'jockey', 'distance', 'month', 'horse_sire', 'horse_dam', 'no_of_turns']
+features = ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance', 'month', 'horse_sire', 'horse_dam', 'no_of_turns']
 
 
 X = d[features] 
@@ -32,4 +32,4 @@ X = d[features]
 
 model = GradientBoostingRegressor()
 model.fit(X, y)
-app.run()
+app.run(model)
