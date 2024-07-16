@@ -4,22 +4,6 @@ import numpy as np
 
 horse_history_data = None
 
-course_mapping = {
-    "A": 1,
-    "A+2": 2,
-    "A+3": 3,
-    "B": 4,
-    "B+2": 5,
-    "B+3": 6,
-    "C": 7,
-    "C+3": 8,
-    "NA": 9,
-    "NA+2": 10,
-    "NB": 11,
-    "NB+2": 12,
-    "AWT": 13
-}
-
 g_mapping = {
     'G': 2.75,
     'GF': 2.5,
@@ -68,6 +52,7 @@ def getHorseHistory(filename, horse_data):
 
 def extractCourse(loc_run):
     parts = loc_run.split('/')
+    course = loc_run
     if len(parts) >= 3:
         course = parts[2].replace("\"", "").strip()
     elif parts[1].strip() == 'AWT':
@@ -132,12 +117,10 @@ def prepareData(race_data):
     data = data[(data["location"] == "ST") | (data["location"] == "HV")]
 
     data["G"] = data["G"].map(g_mapping)
-    data["course"] = data["course"].map(course_mapping)
 
     fieldsToEncodeWithMedian = ['race_class', 'dr', 'trainer', 'jockey', 'horse_country', 'horse_owner',
                                 'horse_import_type', 'horse_color', 'horse_sex', 
-                                'horse_sire', 'horse_dam', 'horse_dam_sire' , 
-                                'course']
+                                'horse_sire', 'horse_dam', 'horse_dam_sire', 'course']
 
     for field in fieldsToEncodeWithMedian:
         data[field] = encodeWithMedianRank(data[field], field)
