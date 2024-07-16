@@ -5,7 +5,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from math import comb
 
-def forward_stepwise(X, y, combination, best_score = 0, speed = 0):
+def findBestFeatureCombinations(X, y):
+  bestScore = 0
+  bestFeatures = None
+  startTime = time.time()
+  speed = 0
+
+  for i in range(2, len(features)):
+    features, score, speed = __findBestFeatureCombinations(X, y, i, bestScore, speed)
+    if score > bestScore:
+        bestScore = score
+        bestFeatures = features
+
+  execution_time = time.time() - startTime
+  print(f'Completed scanning in {int(execution_time / 60)} min {int(execution_time % 60)} s')
+  print(f'Best Score: {bestScore:.4f} with features: {bestFeatures}')
+  return bestFeatures, bestScore
+
+
+def __findBestFeatureCombinations(X, y, combination, best_score = 0, speed = 0):
   best_features = None
 
   featuresCombinations = itertools.combinations(X.columns, combination)
