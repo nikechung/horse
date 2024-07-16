@@ -7,7 +7,8 @@ import time
 from math import comb
 import feature_analysis 
 import algorithm_analysis
-
+from sklearn.ensemble import GradientBoostingRegressor
+import app
 
 horse_data = getHorseData('../horses.csv')
 horseHistory = getHorseHistory('../horses_history.csv', horse_data)
@@ -26,7 +27,9 @@ features = ['horse_color', 'horse_age', 'race_class', 'weight', 'G', 'dr', 'jock
 
 
 X = d[features] 
-model, score = algorithm_analysis.findBestAlgorithm(X, y)
-algorithm_analysis.findBestHyperParameter(model, X, y)
+# model, score = algorithm_analysis.findBestAlgorithm(X, y)
+# algorithm_analysis.findBestHyperParameter(model, X, y)
 
-
+model = GradientBoostingRegressor()
+model.fit(X, y)
+app.run()
