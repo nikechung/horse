@@ -84,8 +84,11 @@ def applyNoOfTurns(data):
     data.loc[data["location"] == 'HV', 'no_of_turns'] = data.loc[data["location"] == 'HV']['distance'].map({
         1000: 1,
         1200: 2,
+        1400: 2,
+        1600: 3,
         1650: 3,
         1800: 3,
+        2000: 4,
         2200: 4,
         2400: 4
     })
@@ -123,7 +126,7 @@ def prepareData(race_data):
 
     fieldsToEncodeWithMedian = ['race_class', 'dr', 'trainer', 'jockey', 'horse_country', 'horse_owner',
                                 'horse_import_type', 'horse_color', 'horse_sex', 
-                                'horse_sire', 'horse_dam', 'horse_dam_sire', 'course']
+                                'horse_sire', 'horse_dam', 'horse_dam_sire', 'course', 'location']
 
     for field in fieldsToEncodeWithMedian:
         data[field] = encodeWithMedianRank(data[field], field)
