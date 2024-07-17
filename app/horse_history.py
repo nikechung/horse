@@ -105,8 +105,16 @@ def applyNoOfTurns(data):
     })
 
 
+
+
 def getMedianRank(field):
+    global horse_history_data
     return horse_history_data.groupby(field)["speed_m_s"].median().rank()
+
+def fillinMissingValueByMean(data, field):
+   global horse_history_data
+   data.loc[data[field].isnull(), field] = getMedianRank(field).mean()
+ 
 
 def encodeWithMedianRank(data, field):
     global horse_history_data

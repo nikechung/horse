@@ -42,10 +42,17 @@ def getHorseFinishTime(horse: Horse, distance, race_class, month, location, ml_m
                                 'horse_sire', 'horse_dam']
     for f in fieldsToEncodeWithMedian:
       data[f] = horse_history.encodeWithMedianRank(data[f], f)
-    
+
     horse_history.applyNoOfTurns(data)
     predict_data = data.drop(columns=['location'], axis=1)
+    
+    fillInNAByMeanField = [ 'jockey', 'horse_dam', 'horse_sire']
+    for f in fillInNAByMeanField:
+        horse_history.fillinMissingValueByMean(predict_data, f)
+    
     print(predict_data)
+
+    
     speed = ml_model.predict(predict_data)
     time = distance / speed
     return time
