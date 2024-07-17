@@ -38,7 +38,6 @@ def getHorseHistory(filename, horse_data):
 
     horse_history_data["finish_time_ms"] = horse_history_data["finish_time"].apply(lambda x: None if x == "--" else (int(x.split(".")[0]) * 60 + int(x.split(".")[1])) * 1000 + int(x.split(".")[2]) * 10)
     horse_history_data["speed_m_s"] = horse_history_data["distance"] / horse_history_data["finish_time_ms"] * 1000
-    horse_history_data["distance_km"] = horse_history_data["distance"].astype("int") / 1000
 
     # Fill in horse information
     horse_history_data["horse_country"] = horse_history_data["horse_id"].map(horse_data["country"].to_dict())
@@ -111,7 +110,9 @@ def getMedianRank(field):
 
 def encodeWithMedianRank(data, field):
     global horse_history_data
-    return data.map(getMedianRank(field).to_dict())
+    medianRank = getMedianRank(field).to_dict()
+    # print(medianRank)
+    return data.map(medianRank)
     
 def prepareData(race_data):
     global horse_history_data
@@ -124,7 +125,7 @@ def prepareData(race_data):
 
     data["G"] = data["G"].map(g_mapping)
 
-    fieldsToEncodeWithMedian = ['race_class', 'dr', 'trainer', 'jockey', 'horse_country', 'horse_owner',
+    fieldsToEncodeWithMedian = ['race_class', 'trainer', 'jockey', 'horse_country', 'horse_owner',
                                 'horse_import_type', 'horse_color', 'horse_sex', 
                                 'horse_sire', 'horse_dam', 'horse_dam_sire', 'course', 'location']
 
