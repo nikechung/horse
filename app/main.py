@@ -21,12 +21,12 @@ if '--find_optimal_features' in sys.argv:
 else:
     optimal_features = feature_analysis.getFeatures()
 
+X = d[optimal_features] 
 
 if '--find_algorithm' in sys.argv:
     model, score = algorithm_analysis.findBestAlgorithm(X, y)
 else:
     model = algorithm_analysis.getModel() 
 
-X = d[optimal_features] 
 model.fit(X, y)
 app.run(model)
