@@ -6,14 +6,20 @@ from sklearn.svm import SVR
 from sklearn.model_selection import cross_val_score, train_test_split, GridSearchCV
 from sklearn.metrics import r2_score
 
-def findBestAlgorithm(X, y):
-    models = [("Linear Regression", LinearRegression()),
+models = [("Linear Regression", LinearRegression()),
             ("Random Forest Regression", RandomForestRegressor()),
             ("KNN Regression", KNeighborsRegressor()),
             ("Decision Tree", DecisionTreeRegressor()),
             ("SVR", SVR()),
             ("Gradient Boosting Regression", GradientBoostingRegressor())]
-    
+
+def getModel():
+    global models
+    name, model = models[5]
+    return model
+
+def findBestAlgorithm(X, y):
+    global models
     bestScore = 0
     bestAlgoName = None
     bestAlgo = None

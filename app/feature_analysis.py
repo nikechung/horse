@@ -5,11 +5,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from math import comb
 
-def findBestFeatureCombinations(X, y):
+
+def getFeatures():
+  return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance', 'month', 'horse_sire', 'horse_dam', 'no_of_turns']
+  
+def findBestFeatureCombinations(data, y, features):
   bestScore = 0
   bestFeatures = None
   startTime = time.time()
   speed = 0
+  X = data[features]
 
   for i in range(2, len(features)):
     features, score, speed = __findBestFeatureCombinations(X, y, i, bestScore, speed)
