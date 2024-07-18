@@ -7,7 +7,7 @@ from math import comb
 
 
 def getFeatures():
-  return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance', 'month', 'horse_sire', 'horse_dam', 'no_of_turns']
+  return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance_km', 'quarter', 'horse_dam', 'no_of_turns']
   
 def findBestFeatureCombinations(data, y, features):
   bestScore = 0

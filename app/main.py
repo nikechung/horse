@@ -15,8 +15,8 @@ y = d['speed_m_s']
 
 if '--find_optimal_features' in sys.argv:
     features =[ "horse_sex", "horse_color", "horse_age", 'race_class', "horse_import_type",
-           "horse_country", "weight",  "G", "dr", "trainer", "jockey", "distance", 
-            "track", "course", "month", "horse_sire", "horse_dam", "horse_dam_sire", 'no_of_turns']
+           "horse_country", "weight", "dr", "trainer", "jockey", "distance_km", 'gear'
+            "track", "course", "quarter", "horse_dam", 'no_of_turns']
     optimal_features, score = feature_analysis.findBestFeatureCombinations(horse_race_data, y, features)
 else:
     optimal_features = feature_analysis.getFeatures()

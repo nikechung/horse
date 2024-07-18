@@ -38,17 +38,17 @@ def findBestAlgorithm(X, y):
 def findBestHyperParameter(model, X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     param_test = {
-        "n_estimators": list(range(100, 300, 100)),
-        "learning_rate": [0.0, 0.1, 0.2],
-        "max_depth": list(range(1, 3, 1)),
-        "subsample": [0.0, 0.1, 0.2],
+        "loss": ["squared_error", "absolute_error", "huber", "quantile"],
+        "learning_rate": [0.001, 0.01, 0.1, 0.2],
+        "n_estimators": [100, 200, 300],
+        "max_depth": [3, 5, 7],
+        "subsample": [0.1, 0.5, 1.0]
     }
 
-    grid = GridSearchCV(estimator=model, param_grid=param_test, scoring='r2')
+    grid = GridSearchCV(estimator=model, param_grid=param_test, scoring='r2', n_jobs=-1, verbose=10)
     grid.fit(X_train, y_train)
     best_model = grid.best_estimator_
     best_params = grid.best_params_
-    grid.score
     y_pred = best_model.predict(X_test)
     score = r2_score(y_test, y_pred)
     print("Best params: ", best_params)

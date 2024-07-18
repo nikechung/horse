@@ -7,20 +7,18 @@ from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State
 
 class Horse:
-  def __init__(self, color, age, dr, weight, sire, dam, jockey, finish_time=0):
+  def __init__(self, color, age, dr, weight, dam, jockey, finish_time=0):
       self.color = color
       self.age = age
       self.dr = dr
       self.weight = weight
-      self.sire = sire
       self.dam = dam
       self.jockey = jockey
       self.finish_time = finish_time
 
 def getHorseFinishTime(horse: Horse, distance, race_class, month, location, ml_model):
-
-    # 'horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance', 'month', 'horse_sire', 'horse_dam', 'no_of_turns'
-
+#   return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance_km', 'quarter', 'horse_dam', 'no_of_turns']
+    distance_km = int(distance) / 1000
     data = pd.DataFrame({
         'horse_color': [horse.color],
         'horse_age': [horse.age],
@@ -28,21 +26,21 @@ def getHorseFinishTime(horse: Horse, distance, race_class, month, location, ml_m
         'weight': [horse.weight],
         'dr': [horse.dr],
         'jockey': [horse.jockey],
+        'distance_km': [distance_km],
         'distance': [distance],
-        'month': [month], 
-        'horse_sire': [horse.sire],
+        'quarter': [horse_history.getQuarter(month)], 
         'horse_dam': [horse.dam],
         'location': [location],
     })
 
-    fieldsToEncodeWithMedian = ['jockey', 'horse_color', 'horse_sire', 'horse_dam']
+    fieldsToEncodeWithMedian = ['jockey', 'horse_color', 'horse_dam']
     for f in fieldsToEncodeWithMedian:
       data[f] = horse_history.encodeWithMedianRank(data[f], f)
 
     horse_history.applyNoOfTurns(data)
-    predict_data = data.drop(columns=['location'], axis=1)
-    
-    fillInNAByMeanField = ['jockey', 'horse_dam', 'horse_sire']
+    predict_data = data.drop(columns=['location', 'distance'], axis=1)
+
+    fillInNAByMeanField = ['jockey', 'horse_dam']
     for f in fillInNAByMeanField:
         horse_history.fillinMissingValueByMean(predict_data, f)
     
@@ -87,8 +85,6 @@ def run(model):
 
     colors = {
         "background": "#fff",
-        "button_color": "#fff",
-        "button_border_color": "transparent"
     }
 
     # Define the layout
@@ -96,25 +92,16 @@ def run(model):
         style={"backgroundColor": colors["background"]},
         children=[
             html.H1(
-                children="HKJC Prediction",
+                children="HKJC Prediction", style={"textAlign": "center"},
             ),
 
             html.Div(style={"display": "flex", "flexDirection":"row"},
                 children=[
                     html.Div(
-                        style={"padding": 10, "flex": 1},
+                        style={"padding": 10, "flex": 2, "padding": "20px", "backgroundColor": "rgb(238, 238, 238)"},
                         children=[
                             html.H2(
-                                children="Result"
-                            ),
-                            html.Div(children="No horse", id="output_label", style={"white-space":"pre-wrap", "textAlign": "center"})
-                    ]),
-                
-                    html.Div(
-                        style={"padding": 10, "flex": 2, "backgroundColor": "#fafafc", "padding": "20px"},
-                        children=[
-                            html.H2(
-                                children="Race"
+                                children="Race", style={"textAlign": "center"},
                             ),
                             html.Div(children=[
                                 html.Div([
@@ -171,7 +158,7 @@ def run(model):
 
                             html.Br(),
                             html.H2(
-                                children="Horse",
+                                children="Horse", style={"textAlign": "center"},
                             ),
                             html.Div(children=[
                                 html.Div(children=[
@@ -196,16 +183,6 @@ def run(model):
                                         step=1,
                                         className="form-control"
                                     ),
-
-                                    html.Br(),
-                                    html.Label("Jockey", className="hp-label"),
-                                    html.Br(),
-                                    dcc.Input(
-                                        id="jockey_input",
-                                        placeholder="Input jockey in English",
-                                        type="text",
-                                        className="form-control"
-                                    ),
                                 ], style={"padding": 10, "flex": 1}),
 
                                 html.Div(children=[
@@ -218,11 +195,11 @@ def run(model):
                                     ),
                                     
                                     html.Br(),
-                                    html.Label("Horse Sire"),
+                                    html.Label("Horse Dam"),
                                     html.Br(),
                                     dcc.Input(
-                                        id="horse_sire_input",
-                                        placeholder="Input horse sire in English",
+                                        id="horse_dam_input",
+                                        placeholder="Input horse dam in English",
                                         type="text",
                                         className="form-control"
                                     ),
@@ -238,11 +215,11 @@ def run(model):
                                     ),
 
                                     html.Br(),
-                                    html.Label("Horse Dam"),
+                                    html.Label("Jockey"),
                                     html.Br(),
                                     dcc.Input(
-                                        id="horse_dam_input",
-                                        placeholder="Input horse dam in English",
+                                        id="jockey_input",
+                                        placeholder="Input jockey in English",
                                         type="text",
                                         className="form-control"
                                     ),
@@ -253,13 +230,21 @@ def run(model):
                                 html.Button("Add Horse",
                                     id="add_horse_button",
                                     className="btn btn-primary",
-                                    style={"margin-right": "20px"}),
+                                    style={"marginRight": "20px"}),
                                 html.Button("Clear",
                                     id="clear_button",
                                     className="btn btn-outline-primary")
                             ], style={"textAlign": "center"}),
                         ]
                     ),
+                    html.Div(
+                        style={"padding": 10, "flex": 1},
+                        children=[
+                            html.H2(
+                                children="Result", style={"textAlign": "center"}
+                            ),
+                            html.Div(children="No horse", id="output_label", style={ "textAlign": "center", "white-space":"pre-wrap"})
+                    ]),
                 ]
             ),
         ]
@@ -283,16 +268,15 @@ def run(model):
         Input('horse_weight_input', 'value'),
         Input('horse_dr_dropdown', 'value'),
         Input('jockey_input', 'value'),
-        Input('horse_sire_input', 'value'),
         Input('horse_dam_input', 'value'),
         Input('add_horse_button', 'n_clicks'),
         Input('clear_button', 'n_clicks'),
         ],
     )
-    def update_output(selected_race_class, selected_distance, selected_location, selected_month, selected_color, selected_age, selected_weight, selected_dr, selected_jockey, selected_sire, selected_dam, add_clicks, clear_clicks):
+    def update_output(selected_race_class, selected_distance, selected_location, selected_month, selected_color, selected_age, selected_weight, selected_dr, selected_jockey, selected_dam, add_clicks, clear_clicks):
         if "add_horse_button" == ctx.triggered_id:
             msg = f"Race Class: {selected_race_class}\nDistance: {selected_distance}\nLocation: {selected_location}\nMonth: {selected_month}\n\n"
-            horse = Horse(selected_color, selected_age, selected_dr, selected_weight, selected_sire, selected_dam, selected_jockey)
+            horse = Horse(selected_color, selected_age, selected_dr, selected_weight, selected_dam, selected_jockey)
             predict_finishtime = getHorseFinishTime(horse, selected_distance, selected_race_class, selected_month, selected_location, model)
             horse.finish_time = predict_finishtime
             output_horse_list.append(horse)

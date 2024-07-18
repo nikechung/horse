@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
+from scipy import stats
 
 horse_history_data = None
 
@@ -114,7 +115,6 @@ def getMedianRank(field):
 def fillinMissingValueByMean(data, field):
    global horse_history_data
    data.loc[data[field].isnull(), field] = getMedianRank(field).mean()
- 
 
 def encodeWithMedianRank(data, field):
     global horse_history_data
@@ -122,14 +122,31 @@ def encodeWithMedianRank(data, field):
     # print(medianRank)
     return data.map(medianRank)
     
+def removeOutlier(data):
+    z_scores = np.abs(stats.zscore(data["speed_m_s"]))
+    outlier_mask = (z_scores > 3)
+    data = data[~outlier_mask]
+    return data
+
+def getQuarter(month):
+    bins = [0,3,6,9,12]
+    labels = [1, 2, 3, 4]
+    quarter = pd.cut([month], bins=bins, labels=labels)[0]
+    return quarter
+
 def prepareData(race_data):
     global horse_history_data
     global course_mapping
     
     data = race_data.copy()
+    data["distance_km"] = data["distance"].astype("int") / 1000
+    data["quarter"] = pd.cut(data["month"], bins=[0,3,6,9,12], labels=[1,2,3,4])
+    data["quarter"] = data["quarter"].astype('int')
 
     # Remove foreign races
     data = data[(data["location"] == "ST") | (data["location"] == "HV")]
+    # Remove outliers
+    data = removeOutlier(data)
 
     data["G"] = data["G"].map(g_mapping)
 
@@ -144,6 +161,6 @@ def prepareData(race_data):
     data["track"] = encodeWithLabelEncoder(data["track"], 'track') 
 
     applyNoOfTurns(data)
-    
+
     return data
     
