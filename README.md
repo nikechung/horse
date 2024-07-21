@@ -62,6 +62,9 @@ python3 horse_graber.py
 ### Remove outliers
 By using Z-scores, remove data where the z-score of the speed.
 
+### Feature scaling
+Scaling "distance" from meters to kilometeres to make sure features are on a similar scale
+
 ## Part III: Feature Selection
 Remove features that are not available to the user before the race(e.g. "horse_id", "result", "G").
 
@@ -93,7 +96,7 @@ In Part IV, the gradient boosting regression algorithm was selected as the best 
 * max_depth
 * subsample
 
-### To run the program with finding optimal model
+### To run the program and find the optimal model
 ```
 cd app
 make optimal
@@ -102,7 +105,7 @@ make optimal
 ## Part VI: Dash APP
 A web-based data visualization applications, allow users to interact with it and get the predicted finish time by using the model in this project.
 
-### To run the application with the optimal model found previously:
+### To run the application with the optimal model found previously
 ```
 cd app
 make run
