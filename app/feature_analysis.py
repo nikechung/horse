@@ -4,10 +4,27 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from math import comb
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Get features
 def getFeatures():
   return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance_km', 'quarter', 'horse_dam', 'no_of_turns']
+
+# Using heatmap to identify relationships between variables
+def createHeatmap(data):
+  columns = ['distance_km', 'act_wt', 'month', 'quarter', 'track', 'course',
+       'race_class', 'dr', 'trainer',
+       'jockey', 'weight', 'gear',
+       'horse_country', 'horse_age', 'horse_owner',
+       'horse_import_type', 'horse_sex', 'horse_sire',
+       'horse_dam', 'horse_dam_sire',
+       'horse_color', 'speed_m_s']
+  corr_matrix = data[columns].corr()
+
+  plt.figure(figsize=(40,30))
+  sns.heatmap(corr_matrix, annot=True, cmap="YlOrRd")
+  plt.show()
 
 # Search best feature combinations
 def findBestFeatureCombinations(data, y, features):

@@ -12,6 +12,9 @@ horse_race_data = prepareData(horse_race_history)
 d = horse_race_data.dropna()
 y = d['speed_m_s']
 
+if '--show_heatmap' in sys.argv:
+    feature_analysis.createHeatmap(d)
+
 if '--find_optimal_features' in sys.argv:
     features =[ "horse_sex", "horse_color", "horse_age", 'race_class', "horse_import_type",
            "horse_country", "weight", "dr", "trainer", "jockey", "distance_km", 'gear'
