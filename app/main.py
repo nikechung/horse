@@ -5,7 +5,6 @@ import feature_analysis
 import app
 import sys
 
-
 horse_data = getHorseData('../horses.csv')
 horse_race_history = getHorseHistory('../horses_history.csv', horse_data)
 horse_race_data = prepareData(horse_race_history)
@@ -28,5 +27,6 @@ if '--find_algorithm' in sys.argv:
 else:
     model = algorithm_analysis.getModel() 
 
+# Run dash app
 model.fit(X, y)
 app.run(model)

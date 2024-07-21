@@ -1,6 +1,6 @@
 import pandas as pd
 
-
+# Prepare horse data
 def getHorseData(filename):
     horse_data = pd.read_csv(filename, index_col="horseID")
     horse_data["age"] = horse_data["country_age"].apply(lambda x: x.split('/')[1])

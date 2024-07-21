@@ -22,6 +22,7 @@ g_mapping = {
     'H': 4
 }
 
+# Prepare horse history data and combine with horse data
 def getHorseHistory(filename, horse_data):
     global horse_history_data
     horse_history_data = pd.read_csv(filename, parse_dates=['date'], date_format='%d/%m/%y')
@@ -105,9 +106,6 @@ def applyNoOfTurns(data):
         2400: 2
     })
 
-
-
-
 def getMedianRank(field):
     global horse_history_data
     return horse_history_data.groupby(field)["speed_m_s"].median().rank()
@@ -134,6 +132,7 @@ def getQuarter(month):
     quarter = pd.cut([month], bins=bins, labels=labels)[0]
     return quarter
 
+# Prepare horse race data
 def prepareData(race_data):
     global horse_history_data
     global course_mapping
@@ -145,9 +144,11 @@ def prepareData(race_data):
 
     # Remove foreign races
     data = data[(data["location"] == "ST") | (data["location"] == "HV")]
+    
     # Remove outliers
     data = removeOutlier(data)
 
+    # Mapping
     data["G"] = data["G"].map(g_mapping)
 
     fieldsToEncodeWithMedian = ['race_class', 'trainer', 'jockey', 'horse_country', 'horse_owner',
@@ -160,6 +161,7 @@ def prepareData(race_data):
     data["gear"] = data["gear"].map(lambda x: 0 if x == "--" else 1)
     data["track"] = encodeWithLabelEncoder(data["track"], 'track') 
 
+    # Number of turns
     applyNoOfTurns(data)
 
     return data

@@ -16,8 +16,8 @@ class Horse:
       self.jockey = jockey
       self.finish_time = finish_time
 
+# Calculate Horse Finish Time
 def getHorseFinishTime(horse: Horse, distance, race_class, month, location, ml_model):
-#   return ['horse_color', 'horse_age', 'race_class', 'weight', 'dr', 'jockey', 'distance_km', 'quarter', 'horse_dam', 'no_of_turns']
     distance_km = int(distance) / 1000
     data = pd.DataFrame({
         'horse_color': [horse.color],
@@ -50,6 +50,13 @@ def getHorseFinishTime(horse: Horse, distance, race_class, month, location, ml_m
     time = distance / speed[0]
     return time  
 
+# Convert finish time to display format
+def getDisplayFinishTime(finish_time):
+    minutes = int(finish_time // 60)
+    seconds = finish_time % 60
+    return f"{minutes}:{seconds:05.2f}"
+
+# Convert encoded value to user input options
 def getFeatureOptions(feature_name):
   if feature_name == "race_class":
     return ['1', '2', '3', '3R', '4', '4R', '4YO', '5', 'G1', 'G2', 'G3', 'GRIFFIN']
@@ -64,11 +71,6 @@ def getFeatureOptions(feature_name):
   elif feature_name == "dr":
     return list(range(1, 15))
 
-def getDisplayFinishTime(finish_time):
-    minutes = int(finish_time // 60)
-    seconds = finish_time % 60
-    return f"{minutes}:{seconds:05.2f}"
-
 def run(model):
     race_class_options = getFeatureOptions("race_class")
     distance_options = getFeatureOptions("distance")
@@ -77,9 +79,11 @@ def run(model):
     horse_age_options = getFeatureOptions("horse_age")
     dr_options = getFeatureOptions("dr")
 
+    # Link boostrap css
     external_stylesheets = [
        'https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/litera/bootstrap.min.css'
     ]
+
     # Create the Dash app
     app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -275,7 +279,10 @@ def run(model):
     )
     def update_output(selected_race_class, selected_distance, selected_location, selected_month, selected_color, selected_age, selected_weight, selected_dr, selected_jockey, selected_dam, add_clicks, clear_clicks):
         if "add_horse_button" == ctx.triggered_id:
+            # Display race content
             msg = f"Race Class: {selected_race_class}\nDistance: {selected_distance}\nLocation: {selected_location}\nMonth: {selected_month}\n\n"
+            
+            # Display horse finish time
             horse = Horse(selected_color, selected_age, selected_dr, selected_weight, selected_dam, selected_jockey)
             predict_finishtime = getHorseFinishTime(horse, selected_distance, selected_race_class, selected_month, selected_location, model)
             horse.finish_time = predict_finishtime
@@ -283,6 +290,7 @@ def run(model):
             for index, output_horse in enumerate(output_horse_list):
                 msg += f"Horse {index+1}, Draw:{output_horse.dr}, Finish Time: {getDisplayFinishTime(output_horse.finish_time)}\n"
 
+            # Display winner
             winner_index, winner = min(enumerate(output_horse_list), key=lambda x: x[1].finish_time)
             msg += f"\n🏆 Winner: Horse {winner_index+1} with finish time: {getDisplayFinishTime(winner.finish_time)} "
             return html.Div(msg), True, True, True, True
