@@ -8,7 +8,7 @@ The program is written and run in python3 and the following library is used:
 3. sklearn
 4. seaborn
 5. dash
-6. selienium 
+6. selenium 
 
 ## Project Setup Instruction
 Open a terminal on the machine
